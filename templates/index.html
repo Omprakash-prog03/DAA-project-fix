@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Grid | Overview</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="dark-theme">
+    <div class="app-shell">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="logo">EV GRID <span class="subtitle">Charging Infrastructure Intelligence</span></div>
+            <div class="scenario">Scenario: Bhubaneswar</div>
+            <div class="status-indicator"><span class="dot"></span> SYSTEM OPERATIONAL</div>
+            <div class="profile">Om Prakash Sahu / Prasant Nayak</div>
+        </header>
+
+        <div class="main-container">
+            <!-- Sidebar -->
+            <nav class="sidebar">
+                <div class="nav-item active">Overview</div>
+                <div class="nav-item">Planner</div>
+                <div class="nav-item">Network</div>
+                <div class="nav-item">Stations</div>
+                <div class="nav-item">Routes</div>
+                <div class="nav-item">Algorithms</div>
+                <div class="nav-item">Analytics</div>
+                <div class="nav-item">Data Sources</div>
+                <div class="nav-item">About</div>
+            </nav>
+
+            <!-- Main Workspace -->
+            <main class="workspace">
+                <section class="overview-header">
+                    <h1>Infrastructure planning intelligence</h1>
+                    <div class="meta">
+                        <span>Location: Bhubaneswar, Odisha</span>
+                        <span>Data Source: OpenStreetMap / Open Charge Map</span>
+                        <span>Last Updated: Just now</span>
+                    </div>
+                </section>
+
+                <div class="map-container">
+                    <div id="live-map" class="placeholder-map">
+                        <div class="map-overlay">LIVE MAP (Interactive Leaflet/MapLibre Integration)</div>
+                    </div>
+                    
+                    <div class="layer-control">
+                        <h3>MAP LAYERS</h3>
+                        <label><input type="checkbox" checked> ROAD NETWORK</label>
+                        <label><input type="checkbox" checked> MST</label>
+                        <label><input type="checkbox" checked> EXISTING STATIONS</label>
+                        <label><input type="checkbox" checked> CANDIDATE STATIONS</label>
+                        <label><input type="checkbox" checked> SELECTED STATIONS</label>
+                        <label><input type="checkbox" checked> SHORTEST ROUTE</label>
+                        <label><input type="checkbox"> WEATHER</label>
+                        <label><input type="checkbox"> POINTS OF INTEREST</label>
+                    </div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="label">ROAD NODES</div>
+                        <div class="value">184</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="label">EV STATIONS</div>
+                        <div class="value">87</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="label">CANDIDATES</div>
+                        <div class="value">34</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="label">MST COST</div>
+                        <div class="value cyan">42.8 km</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="label">BUDGET USED</div>
+                        <div class="value green">78%</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="label">ROUTE</div>
+                        <div class="value cyan">16.4 km</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="label">COVERAGE</div>
+                        <div class="value green">+31.4%</div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

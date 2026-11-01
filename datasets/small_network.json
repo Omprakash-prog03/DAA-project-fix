@@ -1,0 +1,24 @@
+{
+  "nodes": [
+    {"id": "A", "name": "Bhubaneswar Central", "latitude": 20.2961, "longitude": 85.8245},
+    {"id": "B", "name": "Khandagiri", "latitude": 20.3125, "longitude": 85.8012},
+    {"id": "C", "name": "Patia", "latitude": 20.3452, "longitude": 85.8567},
+    {"id": "D", "name": "Chandrasekharpur", "latitude": 20.3589, "longitude": 85.8345},
+    {"id": "E", "name": "Saheed Nagar", "latitude": 20.2845, "longitude": 85.8412}
+  ],
+  "edges": [
+    {"source": "A", "destination": "B", "weight": 4.2},
+    {"source": "A", "destination": "C", "weight": 6.1},
+    {"source": "B", "destination": "C", "weight": 2.8},
+    {"source": "B", "destination": "D", "weight": 5.5},
+    {"source": "C", "destination": "D", "weight": 3.2},
+    {"source": "A", "destination": "E", "weight": 1.8},
+    {"source": "E", "destination": "D", "weight": 4.7}
+  ],
+  "stations": [
+    {"station_id": "S1", "station_name": "Station Alpha", "node_id": "B", "installation_cost": 200000, "benefit": 85, "coverage": 0.8, "charging_capacity": 10},
+    {"station_id": "S2", "station_name": "Station Beta", "node_id": "C", "installation_cost": 150000, "benefit": 70, "coverage": 0.6, "charging_capacity": 8},
+    {"station_id": "S3", "station_name": "Station Gamma", "node_id": "D", "installation_cost": 250000, "benefit": 95, "coverage": 0.9, "charging_capacity": 12},
+    {"station_id": "S4", "station_name": "Station Delta", "node_id": "E", "installation_cost": 100000, "benefit": 50, "coverage": 0.4, "charging_capacity": 6}
+  ]
+}
