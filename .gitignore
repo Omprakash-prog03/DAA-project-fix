@@ -1,0 +1,60 @@
+# .gitignore for EV GRID - Charging Infrastructure Intelligence
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+*.bak
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Render Configuration (if secrets are present)
+# Note: render.yaml is committed as it contains no secrets
+
+# Large files
+*.pdf
+*.html
+*.log
+
+# Test coverage
+.coverage
+htmlcov/
+coverage.xml
