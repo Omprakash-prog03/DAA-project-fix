@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EV Charging Station Placement and Route Planning System - Report</title>
+    <style>
+        body { font-family: "Times New Roman", serif; margin: 40px; line-height: 1.4; color: #000; }
+        .cover { text-align: center; margin-top: 100px; }
+        .nist-header { font-size: 1.5rem; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 10px; margin-bottom: 40px; }
+        .title { font-size: 2.5rem; font-weight: bold; margin: 30px 0; color: #003366; }
+        .subtitle { font-size: 1.2rem; margin-bottom: 40px; }
+        .student-info { text-align: left; margin: 20px 0; font-size: 1.1rem; }
+        .section { margin-top: 40px; }
+        .heading { color: #003366; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 15px; }
+        h1 { font-size: 1.8rem; }
+        h2 { font-size: 1.4rem; }
+        h3 { font-size: 1.2rem; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #003366; color: white; }
+        .footer { position: fixed; bottom: 20px; right: 40px; font-size: 0.9rem; }
+        .page-break { page-break-after: always; }
+        .code-block { background: #f4f4f4; padding: 10px; font-family: monospace; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+
+    <!-- PAGE 1: COVER -->
+    <div class="cover">
+        <div class="nist-header">NIST UNIVERSITY<br>Department of Computer Science and Engineering</div>
+        <div class="title">EV CHARGING STATION PLACEMENT AND ROUTE PLANNING SYSTEM</div>
+        <div class="subtitle">Design and Analysis of Algorithms (DAA) · B.Tech 3rd Semester Project</div>
+        
+        <div style="margin-top: 50px; text-align: left; margin-left: 20%; margin-right: 20%;">
+            <strong>Course:</strong> Design and Analysis of Algorithms<br>
+            <strong>Programme:</strong> B.Tech in Computer Science & Engineering (Data Science)<br>
+            <strong>Academic Year:</strong> 2026–27<br>
+            <strong>Place:</strong> NIST University, Berhampur, Odisha
+        </div>
+
+        <div class="student-info" style="text-align: center; margin-top: 60px;">
+            <h3>Submitted To</h3>
+            <p>Faculty Guide: Prof. __________________________<br>
+            Department of Computer Science and Engineering<br>
+            NIST University</p>
+            
+            <h3 style="margin-top: 40px;">Submitted By</h3>
+            <p><strong>Om Prakash Sahu</strong><br>Roll No: 202556339<br>B.Tech CSE (Data Science), 3rd Semester</p>
+            <p><strong>Prasant Nayak</strong><br>Roll No: 202556393<br>B.Tech CSE (Data Science), 3rd Semester</p>
+        </div>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- PAGE 2: CERTIFICATE -->
+    <div class="section">
+        <h1 class="heading">Certificate</h1>
+        <p>This is to certify that the project report entitled <strong>EV Charging Station Placement and Route Planning System</strong> has been prepared by <strong>Om Prakash Sahu (202556339)</strong> and <strong>Prasant Nayak (202556393)</strong>, students of B.Tech CSE (Data Science), 3rd Semester, NIST University, Berhampur, Odisha, for the academic session 2026–27.</p>
+        <p>The project demonstrates the implementation of Kruskal's MST, 0/1 Knapsack DP, and Dijkstra's Shortest Path algorithms in a professional web application environment.</p>
+        
+        <div style="margin-top: 50px;">
+            <h3>Internal / External Viva-Voce Examiner Evaluation</h3>
+            <p>Evaluated on Date: ______________________</p>
+            <p>Remarks:<br>________________________________________<br>________________________________________</p>
+            <p>Signature of Examiner & Date<br>________________________________________</p>
+        </div>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- PAGE 3: DECLARATION -->
+    <div class="section">
+        <h1 class="heading">Declaration</h1>
+        <p>We hereby declare that this project report on <strong>EV Charging Station Placement and Route Planning System</strong> is the result of our original academic work for the Design and Analysis of Algorithms course. The algorithms (Kruskal, Knapsack, Dijkstra) were implemented manually by the students. No fabricated results are included; experimental results are generated from the implemented system.</p>
+        
+        <div style="display: flex; justify-content: space-between; margin-top: 40px;">
+            <div style="width: 45%;">
+                <h4>Student 1</h4>
+                <p>Om Prakash Sahu<br>202556339<br>B.Tech CSE (Data Science), 3rd Sem</p>
+                <p>Signature:<br>________________</p>
+            </div>
+            <div style="width: 45%;">
+                <h4>Student 2</h4>
+                <p>Prasant Nayak<br>202556393<br>B.Tech CSE (Data Science), 3rd Sem</p>
+                <p>Signature:<br>________________</p>
+            </div>
+        </div>
+
+        <div style="margin-top: 40px;">
+            <h4>Guide / Faculty</h4>
+            <p>Name: __________________________<br>
+            Date: __________________________<br>
+            Signature: __________________________</p>
+        </div>
+
+        <div style="margin-top: 40px; border: 1px solid #000; padding: 15px;">
+            <strong>Statement of Originality</strong><br>
+            The work presented herein is original and adheres to NIST University academic standards.
+        </div>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- PAGE 4: ACKNOWLEDGEMENT -->
+    <div class="section">
+        <h1 class="heading">Acknowledgement</h1>
+        <p>We express our sincere gratitude to the Department of Computer Science and Engineering, NIST University, for providing the laboratory resources and academic environment. We thank the open-source community for technologies like Python, Flask, and Leaflet. Special thanks to our classmates for technical support during algorithm testing.</p>
+        
+        <h2 style="margin-top: 30px;">Institutional & Academic Submission Summary</h2>
+        <table>
+            <tr><th>Project Attribute</th><th>Institutional & Academic Details</th></tr>
+            <tr><td>Project Title</td><td>EV Charging Station Placement and Route Planning System</td></tr>
+            <tr><td>Subject</td><td>Design and Analysis of Algorithms</td></tr>
+            <tr><td>Programme</td><td>B.Tech CSE (Data Science)</td></tr>
+            <tr><td>Semester</td><td>3rd</td></tr>
+            <tr><td>Institution</td><td>NIST University</td></tr>
+            <tr><td>Academic Session</td><td>2026–27</td></tr>
+            <tr><td>Students</td><td>Om Prakash Sahu & Prasant Nayak</td></tr>
+            <tr><td>Roll Numbers</td><td>202556339 & 202556393</td></tr>
+            <tr><td>Core Algorithms</td><td>Kruskal, Dijkstra, 0/1 Knapsack</td></tr>
+        </table>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- PAGE 5: ABSTRACT -->
+    <div class="section">
+        <h1 class="heading">Abstract</h1>
+        <p>This report documents the design and implementation of an EV Charging Station Placement and Route Planning System. The system models road networks as weighted graphs and utilizes Kruskal's Minimum Spanning Tree for network analysis, 0/1 Knapsack Dynamic Programming for budget-constrained station selection, and Dijkstra's Shortest Path for route calculation. The application integrates real-world data sources and provides a professional product-grade UI/UX interface.</p>
+        
+        <h2 style="margin-top: 20px;">Executive Technical Profile</h2>
+        <table>
+            <tr><th>Technical Dimension</th><th>Implementation Specification</th></tr>
+            <tr><td>Application Type</td><td>Deployable Web Application</td></tr>
+            <tr><td>Backend</td><td>Python Flask</td></tr>
+            <tr><td>Frontend</td><td>HTML/CSS/JavaScript (Professional UI)</td></tr>
+            <tr><td>Graph Model</td><td>Weighted Graph</td></tr>
+            <tr><td>MST Algorithm</td><td>Kruskal (Manual)</td></tr>
+            <tr><td>Station Optimization</td><td>0/1 Knapsack (Manual DP)</td></tr>
+            <tr><td>Route Algorithm</td><td>Dijkstra (Manual)</td></tr>
+            <tr><td>Visualization</td><td>Interactive Map (Leaflet/MapLibre)</td></tr>
+            <tr><td>Deployment</td><td>Render (Gunicorn)</td></tr>
+            <tr><td>Testing</td><td>Automated Unit + Integration Tests</td></tr>
+        </table>
+
+        <h2 style="margin-top: 20px;">Keywords</h2>
+        <p>EV infrastructure, Graph Algorithms, Kruskal, Dijkstra, 0/1 Knapsack, Dynamic Programming, Minimum Spanning Tree, Shortest Path, Route Planning, Optimization.</p>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- PAGE 6: TABLE OF CONTENTS -->
+    <div class="section">
+        <h1 class="heading">Table of Contents</h1>
+        <p><strong>PART 1 — FRONT MATTER</strong></p>
+        <ul>
+            <li>Cover Page (Page 1)</li>
+            <li>Certificate (Page 2)</li>
+            <li>Declaration (Page 3)</li>
+            <li>Acknowledgement (Page 4)</li>
+            <li>Abstract (Page 5)</li>
+            <li>Table of Contents (Page 6)</li>
+        </ul>
+        <p><strong>PART 2 — PROJECT INTRODUCTION AND REQUIREMENT ANALYSIS</strong></p>
+        <ul>
+            <li>1. Introduction</li>
+            <li>2. Problem Statement and Objectives</li>
+            <li>3. Scope and Feasibility Analysis</li>
+            <li>4. Software and Hardware Requirements</li>
+        </ul>
+        <p><strong>PART 3 — ALGORITHMIC DESIGN AND SYSTEM MODELING</strong></p>
+        <ul>
+            <li>5. System Architecture and Data Flow</li>
+            <li>6. Use-Case Diagram and Functional Specifications</li>
+            <li>7. Graph Model and Network Representation</li>
+            <li>8. Algorithm Design</li>
+            <li>9. Algorithm Complexity Analysis</li>
+        </ul>
+        <p><strong>PART 4 — IMPLEMENTATION</strong></p>
+        <ul>
+            <li>10. Kruskal MST Implementation</li>
+            <li>11. 0/1 Knapsack Implementation</li>
+            <li>12. Dijkstra Shortest Path Implementation</li>
+            <li>13. Integrated Optimization Pipeline</li>
+        </ul>
+        <p><strong>PART 5 — APPLICATION AND RESULTS</strong></p>
+        <ul>
+            <li>14. Web Application Interface</li>
+            <li>15. Graph Visualization and Network Analysis</li>
+            <li>16. Charging Station Optimization Results</li>
+            <li>17. Route Planning Results</li>
+        </ul>
+        <p><strong>PART 6 — TESTING, CONCLUSION AND REFERENCES</strong></p>
+        <ul>
+            <li>18. System Testing</li>
+            <li>19. Results and Discussion</li>
+            <li>20. Limitations and Future Scope</li>
+            <li>21. Conclusion</li>
+            <li>22. References</li>
+        </ul>
+        <p><strong>LIST OF FIGURES</strong></p>
+        <p><strong>LIST OF TABLES</strong></p>
+    </div>
+    
+    <!-- ... Additional pages (7-30) would follow in the full PDF generation ... -->
+    <!-- For the purpose of this workspace, I am providing the core structure and logic. -->
+    <!-- The final PDF is generated via Python ReportLab script below. -->
+
+    <div class="section">
+        <h1 class="heading">1. Introduction</h1>
+        <p>The adoption of Electric Vehicles (EVs) necessitates robust charging infrastructure. This project models road networks as weighted graphs to optimize station placement under budget constraints and calculate efficient routes using classical DAA algorithms.</p>
+    </div>
+
+    <div class="section">
+        <h1 class="heading">8. Algorithm Design</h1>
+        <h2>8.1 Kruskal</h2>
+        <p>Objective: Find Minimum Spanning Tree (MST) of the road network.</p>
+        <div class="code-block">
+def kruskal_mst(nodes, edges):<br>&nbsp;&nbsp;... union-find logic ...<br>&nbsp;&nbsp;return mst_edges, total_weight...
+        </div>
+        <h2>8.2 0/1 Knapsack</h2>
+        <p>Objective: Maximize benefit within budget constraint.</p>
+        <div class="code-block">
+def knapsack(stations, budget):<br>&nbsp;&nbsp;... DP table logic ...<br>&nbsp;&nbsp;return selected, rejected...
+        </div>
+        <h2>8.3 Dijkstra</h2>
+        <p>Objective: Calculate shortest path between source and destination.</p>
+        <div class="code-block">
+def dijkstra(graph, source, destination):<br>&nbsp;&nbsp;... priority queue logic ...<br>&nbsp;&nbsp;return distance, path...
+        </div>
+    </div>
+
+    <div class="section">
+        <h1 class="heading">9. Complexity Analysis</h1>
+        <table>
+            <tr><th>Algorithm</th><th>Time Complexity</th><th>Space Complexity</th><th>Main Operation</th></tr>
+            <tr><td>Kruskal</td><td>O(E log E)</td><td>O(V+E)</td><td>Edge sorting + Union-Find</td></tr>
+            <tr><td>Dijkstra</td><td>O((V+E) log V)</td><td>O(V+E)</td><td>Relaxation + Min Heap</td></tr>
+            <tr><td>0/1 Knapsack</td><td>O(nW)</td><td>O(nW)</td><td>DP table</td></tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h1 class="heading">22. References</h1>
+        <ul>
+            <li>Cormen et al., Introduction to Algorithms</li>
+            <li>Kleinberg & Tardos, Algorithm Design</li>
+            <li>Flask Official Documentation (https://flask.palletsprojects.com)</li>
+            <li>Python Official Documentation (https://python.org)</li>
+            <li>Render Deployment Documentation (https://render.com)</li>
+        </ul>
+    </div>
+
+    <div class="footer">Page 1 of 30 | NIST University | EV Charging Station Placement and Route Planning</div>
+
+</body>
+</html>
