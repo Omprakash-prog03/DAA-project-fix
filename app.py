@@ -16,6 +16,10 @@ def load_dataset(name):
             return json.load(f)
     return None
 
+@app.route('/health')
+def health():
+    return jsonify({"status": "healthy", "version": "1.0.0", "environment": os.environ.get('FLASK_ENV', 'development')})
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -145,4 +149,7 @@ def api_optimize():
     })
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # Production configuration: use environment variables, disable debug
+    port = int(os.environ.get('PORT', 5000))
+    debug = os.environ.get('FLASK_ENV', 'development') == 'development'
+    app.run(host='0.0.0.0', port=port, debug=debug)
