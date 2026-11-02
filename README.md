@@ -1,61 +1,44 @@
-# EV Charging Station Placement and Route Planning System
+# EV Grid — Charging Station and Route Planner
 
-## Project Overview
-A Design and Analysis of Algorithms (DAA) academic project for 3rd Semester B.Tech CSE (Data Science) at NIST University.
+A Flask demo for NIST University students Om Prakash Sahu and Prasant Nayak. It uses a small fictional Bhubaneswar dataset to demonstrate manual Kruskal, Dijkstra, and 0/1 knapsack algorithms. The network diagram is schematic, not a live map; external data APIs are not currently integrated and the results are not real-world recommendations.
 
-## Students
-- **Om Prakash Sahu** (Roll No: 202556339)
-- **Prasant Nayak** (Roll No: 202556393)
+## Run locally
 
-## Institution
-- **NIST University**, Berhampur, Odisha
-- **Department**: Computer Science and Engineering
-- **Programme**: B.Tech in Computer Science & Engineering (Data Science)
-- **Academic Session**: 2026–27
-- **Semester**: 3rd
-
-## Faculty Guide
-**Prof. __________________________**
-
-## Core Algorithms
-1. **Kruskal's Minimum Spanning Tree** (Manual implementation)
-2. **0/1 Knapsack Dynamic Programming** (Manual implementation)
-3. **Dijkstra's Shortest Path Algorithm** (Manual implementation)
-
-## Architecture
-- **Backend**: Python Flask
-- **Frontend**: HTML/CSS/JavaScript (Professional Product-Grade UI/UX)
-- **Visualization**: Leaflet/MapLibre (Interactive Map) + SVG/Canvas
-- **Deployment**: Python web service using Gunicorn
-
-## Usage
-1. Install dependencies: `pip install -r requirements.txt`
-2. Run locally: `python app.py`
-
-## Deploy to Google Cloud Run
-
-The included Dockerfile starts Gunicorn on the port supplied by Cloud Run. Deployment requires a Google Cloud project with billing enabled, the Google Cloud CLI, and permissions to build and deploy. Charges may apply.
-
-From a checkout containing the Dockerfile, authenticate using `gcloud auth login`, select your project with `gcloud config set project PROJECT_ID`, and enable the required services:
+Install Python 3.9 or newer and Git. In a terminal:
 
 ```sh
-gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com
-gcloud run deploy ev-grid-optimizer --source . --region asia-south1 --allow-unauthenticated
+git clone https://github.com/Omprakash-prog03/DAA-project-fix.git
+cd DAA-project-fix
+python -m venv .venv
 ```
 
-The last command creates a publicly accessible service and builds the Dockerfile using Cloud Build. Follow any CLI prompts, then open the service URL printed by the command and check `/health`. Do not commit credentials or secrets. Consult the Cloud Run logs if the build or health check fails.
+On macOS/Linux, use `python3` instead of `python` if necessary. Activate the environment:
 
-No live Cloud Run deployment has been verified by this repository configuration alone. The homepage currently contains placeholder metrics and map; routes for pages without corresponding templates, such as `/planner`, are not ready. External API integrations are not implemented in the current backend.
+- Windows PowerShell: `.venv\Scripts\Activate.ps1` (if blocked, use Command Prompt instead).
+- Windows Command Prompt: `.venv\Scripts\activate.bat`
+- macOS/Linux: `source .venv/bin/activate`
 
-## Datasets
-- `datasets/small_network.json`
-- `datasets/medium_network.json`
-- `datasets/large_network.json`
-- `datasets/india_demo.json`
-- `datasets/bhubaneswar_demo.json`
+Then run:
 
-## Report
-The complete academic report (`EV_Charging_Station_Placement_and_Route_Planning_Report.pdf`) documents the implementation, algorithms, architecture, testing, and results following the NIST University reference design.
+```sh
+python -m pip install -r requirements.txt
+python app.py
+```
 
-## License
-Academic Project - NIST University
+Open **http://localhost:5000** in your browser. Choose locations and a budget, then click **Run optimization**. Press Ctrl+C to stop the server. If port 5000 is already occupied, stop the other application or set the `PORT` environment variable before running the app. Always run commands from the project directory.
+
+If you cloned an older version of the repository, fetch the latest changes or check out the branch containing these fixes. For example: `git fetch origin` followed by `git checkout arena/fb2b6ade-daa-project-fix` once that branch has been pushed.
+
+## Tests
+
+With the virtual environment activated, run `python -m pytest -q`.
+
+## Implementation
+
+- `app.py`: Flask routes and input validation.
+- `algorithms/`: manual Union-Find Kruskal, heap-based Dijkstra and exact 0/1 knapsack dynamic programming.
+- `datasets/small_network.json`: bundled demo network and candidate stations.
+- `templates/` and `static/`: interactive offline planner.
+- `tests/`: algorithm and application smoke tests.
+
+The academic report in the repository predates these fixes and should be checked against the current implementation before submission.
