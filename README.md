@@ -32,16 +32,20 @@ A Design and Analysis of Algorithms (DAA) academic project for 3rd Semester B.Te
 1. Install dependencies: `pip install -r requirements.txt`
 2. Run locally: `python app.py`
 
-## Deploy to Railway
+## Deploy to Google Cloud Run
 
-The repository includes `railway.json` with the build command, Gunicorn start command and `/health` health check. To deploy:
+The included Dockerfile starts Gunicorn on the port supplied by Cloud Run. Deployment requires a Google Cloud project with billing enabled, the Google Cloud CLI, and permissions to build and deploy. Charges may apply.
 
-1. Push the branch containing `railway.json` to GitHub (or merge it into the branch you want to deploy).
-2. In the Railway dashboard, create a project and choose **Deploy from GitHub repo**. Connect and select `Omprakash-prog03/DAA-project-fix`, then select the branch containing the configuration.
-3. Deploy the service. Railway supplies `PORT`; do not set it manually. Generate a public domain under the service's networking settings.
-4. Check the build and deployment logs, then visit the generated domain and its `/health` endpoint.
+From a checkout containing the Dockerfile, authenticate using `gcloud auth login`, select your project with `gcloud config set project PROJECT_ID`, and enable the required services:
 
-Railway account access and any applicable payment or plan setup are required. No live Railway deployment has been verified by this repository configuration alone. The homepage currently contains placeholder metrics and map; routes for pages without corresponding templates, such as `/planner`, are not ready. External API integrations are not implemented in the current backend.
+```sh
+gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com
+gcloud run deploy ev-grid-optimizer --source . --region asia-south1 --allow-unauthenticated
+```
+
+The last command creates a publicly accessible service and builds the Dockerfile using Cloud Build. Follow any CLI prompts, then open the service URL printed by the command and check `/health`. Do not commit credentials or secrets. Consult the Cloud Run logs if the build or health check fails.
+
+No live Cloud Run deployment has been verified by this repository configuration alone. The homepage currently contains placeholder metrics and map; routes for pages without corresponding templates, such as `/planner`, are not ready. External API integrations are not implemented in the current backend.
 
 ## Datasets
 - `datasets/small_network.json`
