@@ -6,15 +6,28 @@ def knapsack(stations, budget):
     """Exact 0/1 knapsack DP, scaling all costs by their greatest common divisor."""
     if isinstance(budget, bool) or not isinstance(budget, int) or budget < 0:
         raise ValueError('Budget must be a non-negative integer')
+    if not isinstance(stations, list) or any(not isinstance(s, dict) for s in stations):
+        raise ValueError('Stations must be a list of objects')
     costs = []
+    benefits = []
     for station in stations:
         cost, benefit = station.get('installation_cost'), station.get('benefit')
-        if isinstance(cost, bool) or not isinstance(cost, int) or cost <= 0:
-            raise ValueError('Station costs must be positive integers')
-        if isinstance(benefit, bool) or not isinstance(benefit, (int, float)) or not isfinite(benefit) or benefit < 0:
+        if isinstance(cost, bool) or not isinstance(cost, int) or cost < 0:
+            raise ValueError('Station costs must be non-negative integers')
+        try:
+            valid_benefit = not isinstance(benefit, bool) and isinstance(benefit, (int, float)) and isfinite(benefit) and benefit >= 0
+        except OverflowError:
+            valid_benefit = False
+        if not valid_benefit:
             raise ValueError('Station benefits must be non-negative numbers')
         costs.append(cost)
-    scale = reduce(gcd, costs) if costs else 1
+        benefits.append(benefit)
+    try:
+        if not isfinite(sum(benefits)):
+            raise ValueError('Total station benefit is too large')
+    except OverflowError:
+        raise ValueError('Total station benefit is too large')
+    scale = reduce(gcd, costs, 0) or 1
     capacity = min(budget // scale, sum(costs) // scale)
     if (len(stations) + 1) * (capacity + 1) > 2000000:
         raise ValueError('Problem is too large; reduce the budget or number of stations')

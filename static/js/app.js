@@ -22,12 +22,12 @@
     try {
       const response = await fetch('/api/optimize',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...data, source:$('source').value,destination:$('destination').value,budget:Number($('budget').value)})});
       const json = await response.json(); if(!response.ok) throw new Error(json.error || 'Optimization failed'); result=json;
-      $('nodes').textContent=result.network.node_count; $('mst').textContent=fmt(result.mst.weight)+' km'; $('distance').textContent=result.route.distance === null ? 'No route' : fmt(result.route.distance)+' km';
+      $('nodes').textContent=result.network.node_count; $('mst').textContent=fmt(result.mst.weight)+' km' + (result.mst.connected ? '' : ' (forest)'); $('distance').textContent=result.route.distance === null ? 'No route' : fmt(result.route.distance)+' km';
       $('selected-count').textContent=result.stations.selected.length; $('cost').textContent='₹'+fmt(result.stations.total_cost); $('benefit').textContent=fmt(result.stations.total_benefit);
       const names=Object.fromEntries(data.nodes.map(n=>[n.id,n.name])); $('route-text').textContent=result.route.path.map(id=>names[id]).join(' → ') || 'No route available.';
       $('stations').replaceChildren(); result.stations.selected.forEach(s => {const li=document.createElement('li');li.textContent=`${s.station_name} · ₹${fmt(s.installation_cost)} · benefit ${s.benefit}`; $('stations').appendChild(li);});
       if(!result.stations.selected.length) {const li=document.createElement('li');li.textContent='No stations selected for this budget.';$('stations').appendChild(li);}
-      $('remaining').textContent='Remaining budget: ₹'+fmt(result.stations.remaining_budget); $('message').textContent='Optimization complete.'; draw();
+      $('remaining').textContent='Remaining budget: ₹'+fmt(result.stations.remaining_budget); $('message').textContent=result.mst.connected ? 'Optimization complete.' : `Network disconnected: ${result.mst.components} components. Showing a spanning forest.`; draw();
     } catch(err) { $('message').textContent='Unable to calculate: '+err.message; } finally { $('run').disabled=false; }
   }
   $('planner').addEventListener('submit',run);

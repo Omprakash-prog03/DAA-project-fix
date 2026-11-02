@@ -46,3 +46,68 @@ class TestDAAAlgorithms(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+def test_dijkstra_checks_unvisited_edges_and_same_node():
+    import pytest
+    graph = {'A': {'B': 1}, 'B': {}, 'C': {'B': -1}}
+    with pytest.raises(ValueError):
+        dijkstra(graph, 'A', 'B')
+    assert dijkstra({'A': {}}, 'A', 'A')[:2] == (0, ['A'])
+    with pytest.raises(ValueError):
+        dijkstra({'A': {'B': 1}}, 'A', 'A')
+
+
+def test_knapsack_zero_cost_and_nondivisible_budget():
+    stations = [{'installation_cost': 0, 'benefit': 2},
+                {'installation_cost': 6, 'benefit': 5},
+                {'installation_cost': 10, 'benefit': 6}]
+    selected, _, cost, benefit, remaining, _ = knapsack(stations, 11)
+    assert (cost, benefit, remaining) == (10, 8, 1)
+    assert len(selected) == 2
+
+
+def test_knapsack_matches_exhaustive_search():
+    import random
+    from itertools import combinations
+    rng = random.Random(121)
+    for _ in range(100):
+        stations = [{'installation_cost': rng.randrange(0, 15), 'benefit': rng.randrange(0, 20)} for _ in range(6)]
+        budget = rng.randrange(0, 35)
+        *_, benefit, remaining, table = knapsack(stations, budget)
+        expected = max(sum(s['benefit'] for s in subset) for n in range(7)
+                       for subset in combinations(stations, n)
+                       if sum(s['installation_cost'] for s in subset) <= budget)
+        assert benefit == expected
+        assert remaining >= 0
+
+
+def test_dijkstra_against_floyd_warshall():
+    import random
+    rng = random.Random(41)
+    nodes = [str(i) for i in range(6)]
+    for _ in range(30):
+        graph = {a: {b: rng.randrange(0, 20) for b in nodes if a != b and rng.random() < .35} for a in nodes}
+        distances = {(a, b): (0 if a == b else graph[a].get(b, float('inf'))) for a in nodes for b in nodes}
+        for k in nodes:
+            for i in nodes:
+                for j in nodes:
+                    distances[i, j] = min(distances[i, j], distances[i, k] + distances[k, j])
+        for a in nodes:
+            for b in nodes:
+                distance, path, _, _ = dijkstra(graph, a, b)
+                assert distance == distances[a, b]
+                if path:
+                    assert path[0] == a and path[-1] == b
+                    assert sum(graph[x][y] for x, y in zip(path, path[1:])) == distance
+
+
+def test_kruskal_forest_parallel_edges_and_negative_weights():
+    nodes = ['a', 'b', 'c', 'isolated']
+    edges = [{'source': 'a', 'destination': 'b', 'weight': 9},
+             {'source': 'a', 'destination': 'b', 'weight': -2},
+             {'source': 'b', 'destination': 'c', 'weight': 3},
+             {'source': 'a', 'destination': 'c', 'weight': 7},
+             {'source': 'a', 'destination': 'a', 'weight': -10}]
+    mst, weight, chosen, rejected = kruskal_mst(nodes, edges)
+    assert weight == 1 and len(mst) == 2 and len(rejected) == 3

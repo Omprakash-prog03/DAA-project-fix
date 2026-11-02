@@ -8,6 +8,7 @@ from algorithms.dijkstra import dijkstra
 from algorithms.knapsack import knapsack
 
 app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024
 DATASET = Path(__file__).resolve().parent / 'datasets' / 'small_network.json'
 
 @app.get('/health')
@@ -32,6 +33,14 @@ def payload():
         raise ValueError('A JSON object is required')
     return data
 
+def finite_number(value):
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return False
+    try:
+        return math.isfinite(value)
+    except OverflowError:
+        return False
+
 def graph_data(data):
     nodes, edges = data.get('nodes'), data.get('edges')
     if not isinstance(nodes, list) or not nodes or not isinstance(edges, list):
@@ -41,14 +50,21 @@ def graph_data(data):
         raise ValueError('Node IDs must be unique non-empty strings')
     graph = {n: {} for n in ids}
     for e in edges:
-        if not isinstance(e, dict) or e.get('source') not in graph or e.get('destination') not in graph:
+        if (not isinstance(e, dict) or not isinstance(e.get('source'), str)
+                or not isinstance(e.get('destination'), str)
+                or e['source'] not in graph or e['destination'] not in graph):
             raise ValueError('Edges must reference existing nodes')
         w = e.get('weight')
-        if isinstance(w, bool) or not isinstance(w, (int, float)) or not math.isfinite(w) or w < 0:
+        if not finite_number(w) or w < 0:
             raise ValueError('Edge weights must be finite non-negative numbers')
         u, v = e['source'], e['destination']
         graph[u][v] = min(graph[u].get(v, w), w)
         graph[v][u] = min(graph[v].get(u, w), w)
+    try:
+        if not math.isfinite(math.fsum(e['weight'] for e in edges)):
+            raise ValueError('Total edge weight is too large')
+    except OverflowError:
+        raise ValueError('Total edge weight is too large')
     return ids, edges, graph
 
 @app.errorhandler(ValueError)
@@ -60,16 +76,18 @@ def optimize():
     data = payload()
     ids, edges, graph = graph_data(data)
     source, destination = data.get('source'), data.get('destination')
-    if source not in graph or destination not in graph:
+    if not isinstance(source, str) or not isinstance(destination, str) or source not in graph or destination not in graph:
         raise ValueError('Choose a valid start and destination')
     stations = data.get('stations')
     if not isinstance(stations, list) or any(not isinstance(s, dict) for s in stations):
         raise ValueError('Stations must be a list of objects')
+    if any(not isinstance(s.get('node_id'), str) or s['node_id'] not in graph for s in stations):
+        raise ValueError('Each station must reference an existing node')
     mst, weight, selected_edges, rejected_edges = kruskal_mst(ids, edges)
     selected, rejected, cost, benefit, remaining, _ = knapsack(stations, data.get('budget'))
     distance, path, predecessors, visited = dijkstra(graph, source, destination)
     return jsonify(network={'node_count': len(ids), 'edge_count': len(edges)},
-        mst={'edges': mst, 'weight': weight, 'selected': len(selected_edges), 'rejected': len(rejected_edges)},
+        mst={'edges': mst, 'weight': weight, 'selected': len(selected_edges), 'rejected': len(rejected_edges), 'connected': len(mst) == len(ids) - 1, 'components': len(ids) - len(mst)},
         stations={'selected': selected, 'rejected': rejected, 'total_cost': cost, 'total_benefit': benefit, 'remaining_budget': remaining},
         route={'distance': distance if math.isfinite(distance) else None, 'path': path, 'predecessors': predecessors, 'visited_order': visited})
 
@@ -77,7 +95,7 @@ def optimize():
 def api_kruskal():
     ids, edges, _ = graph_data(payload())
     mst, total, selected, rejected = kruskal_mst(ids, edges)
-    return jsonify(mst_edges=mst, total_weight=total, selected_edges=selected, rejected_edges=rejected)
+    return jsonify(mst_edges=mst, total_weight=total, selected_edges=selected, rejected_edges=rejected, connected=len(mst) == len(ids) - 1, components=len(ids) - len(mst))
 
 @app.post('/api/knapsack')
 def api_knapsack():
@@ -92,7 +110,9 @@ def api_knapsack():
 def api_dijkstra():
     data = payload()
     graph = data.get('graph')
-    if not isinstance(graph, dict) or data.get('source') not in graph or data.get('destination') not in graph:
+    if (not isinstance(graph, dict) or not isinstance(data.get('source'), str)
+            or not isinstance(data.get('destination'), str) or data['source'] not in graph
+            or data['destination'] not in graph):
         raise ValueError('Provide a graph and valid source and destination')
     edges = []
     for u, neighbors in graph.items():
