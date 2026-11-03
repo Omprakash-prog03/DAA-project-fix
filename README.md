@@ -1,61 +1,51 @@
-# EV Charging Station Placement and Route Planning System
+# EV Charging Station Placement and Route Planning using DAA
 
-## Project Overview
-A Design and Analysis of Algorithms (DAA) academic project for 3rd Semester B.Tech CSE (Data Science) at NIST University.
+An educational Flask application for understanding how three algorithms relate to an EV infrastructure planning problem. It uses a small, fixed, fictional graph and does not need maps, API keys, a database or an internet connection after installation.
 
-## Students
-- **Om Prakash Sahu** (Roll No: 202556339)
-- **Prasant Nayak** (Roll No: 202556393)
+## Run locally
 
-## Institution
-- **NIST University**, Berhampur, Odisha
-- **Department**: Computer Science and Engineering
-- **Programme**: B.Tech in Computer Science & Engineering (Data Science)
-- **Academic Session**: 2026–27
-- **Semester**: 3rd
+Install Python 3.9 or newer. On Windows, you can double-click `run_windows.bat` in the extracted project folder. It creates a virtual environment, installs dependencies, and starts the server. Keep its window open and visit http://127.0.0.1:5000. If it reports an error, share the message in that window.
 
-## Faculty Guide
-**Prof. __________________________**
-
-## Core Algorithms
-1. **Kruskal's Minimum Spanning Tree** (Manual implementation)
-2. **0/1 Knapsack Dynamic Programming** (Manual implementation)
-3. **Dijkstra's Shortest Path Algorithm** (Manual implementation)
-
-## Architecture
-- **Backend**: Python Flask
-- **Frontend**: HTML/CSS/JavaScript (Professional Product-Grade UI/UX)
-- **Visualization**: Leaflet/MapLibre (Interactive Map) + SVG/Canvas
-- **Deployment**: Python web service using Gunicorn
-
-## Usage
-1. Install dependencies: `pip install -r requirements.txt`
-2. Run locally: `python app.py`
-
-## Deploy to Google Cloud Run
-
-The included Dockerfile starts Gunicorn on the port supplied by Cloud Run. Deployment requires a Google Cloud project with billing enabled, the Google Cloud CLI, and permissions to build and deploy. Charges may apply.
-
-From a checkout containing the Dockerfile, authenticate using `gcloud auth login`, select your project with `gcloud config set project PROJECT_ID`, and enable the required services:
+Alternatively, open a terminal in this project folder:
 
 ```sh
-gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com
-gcloud run deploy ev-grid-optimizer --source . --region asia-south1 --allow-unauthenticated
+python -m venv .venv
 ```
 
-The last command creates a publicly accessible service and builds the Dockerfile using Cloud Build. Follow any CLI prompts, then open the service URL printed by the command and check `/health`. Do not commit credentials or secrets. Consult the Cloud Run logs if the build or health check fails.
+Activate the environment:
 
-No live Cloud Run deployment has been verified by this repository configuration alone. The homepage currently contains placeholder metrics and map; routes for pages without corresponding templates, such as `/planner`, are not ready. External API integrations are not implemented in the current backend.
+- **Windows PowerShell:** `.venv\Scripts\Activate.ps1`
+- **Windows Command Prompt:** `.venv\Scripts\activate.bat`
+- **macOS / Linux:** `source .venv/bin/activate`
 
-## Datasets
-- `datasets/small_network.json`
-- `datasets/medium_network.json`
-- `datasets/large_network.json`
-- `datasets/india_demo.json`
-- `datasets/bhubaneswar_demo.json`
+On macOS/Linux, use `python3` if `python` is unavailable. Then install and run:
 
-## Report
-The complete academic report (`EV_Charging_Station_Placement_and_Route_Planning_Report.pdf`) documents the implementation, algorithms, architecture, testing, and results following the NIST University reference design.
+```sh
+python -m pip install -r requirements.txt
+python app.py
+```
 
-## License
-Academic Project - NIST University
+Open **http://localhost:5000**. Press Ctrl+C in the terminal to stop. If port 5000 is occupied, stop the other app or choose a different port with the `PORT` environment variable.
+
+If you cloned the repository, check out the branch containing these changes before running it; they may not yet be on `main`.
+
+## The demonstration
+
+1. **Graph:** Five locations A–E and six weighted, undirected roads, in `datasets/teaching_graph.json`.
+2. **Dijkstra:** Select a start and destination. For A to E, the path is A → C → E with distance **10**. The min-heap chooses the next closest unvisited location and the app shows actual relaxation steps. Code: `algorithms/dijkstra.py`.
+3. **Kruskal:** Sort roads by weight, using Union-Find to skip cycles. The fixed graph's MST has total cost **11**. Code: `algorithms/kruskal.py`.
+4. **0/1 knapsack:** Check the station candidates and enter a budget. For ₹100,000 with all candidates, the maximum benefit is **200**, at a cost of ₹100,000. Multiple optimal combinations are possible. The DP table and selected combination are displayed. Code: `algorithms/knapsack.py`.
+
+The graph provides context for all three calculations, but they are **independent demonstrations**: Dijkstra uses the original roads, not only the MST; station selection maximizes the provided benefit values and does not guarantee route coverage or charging feasibility. Values are illustrative, not real-world recommendations.
+
+Knapsack costs are divided by their greatest common divisor before building the DP table. This preserves exact results while keeping the table small. A budget not divisible by that unit is rounded down only for the table capacity; costs and the remaining budget are still reported in rupees.
+
+## Tests
+
+With the virtual environment activated, run:
+
+```sh
+python -m pytest -q
+```
+
+The academic report predates this simplified version; check it against the current implementation before submission. Deployment configuration and the previous dataset are retained but are not needed for this demonstration.

@@ -1,47 +1,55 @@
+from math import gcd, isfinite
+from functools import reduce
+
+
 def knapsack(stations, budget):
-    """
-    Manual 0/1 Knapsack Dynamic Programming implementation
-    Returns: selected_stations, rejected_stations, total_cost, total_benefit, remaining_budget, dp_table
-    """
-    n = len(stations)
-    # Normalize budget to integer (e.g., in units of 1000 or 1 lakh if needed)
-    # For simplicity, we'll assume budget and costs are integers
-    W = int(budget)
-    
-    # dp[i][w] = max benefit using first i items with budget w
-    dp = [[0 for _ in range(W + 1)] for _ in range(n + 1)]
-    
-    for i in range(1, n + 1):
-        station = stations[i-1]
-        cost = int(station['installation_cost'])
-        benefit = int(station['benefit'])
-        
-        for w in range(W + 1):
+    """Exact 0/1 knapsack DP, scaling all costs by their greatest common divisor."""
+    if isinstance(budget, bool) or not isinstance(budget, int) or budget < 0:
+        raise ValueError('Budget must be a non-negative integer')
+    if not isinstance(stations, list) or any(not isinstance(s, dict) for s in stations):
+        raise ValueError('Stations must be a list of objects')
+    costs = []
+    benefits = []
+    for station in stations:
+        cost, benefit = station.get('installation_cost'), station.get('benefit')
+        if isinstance(cost, bool) or not isinstance(cost, int) or cost < 0:
+            raise ValueError('Station costs must be non-negative integers')
+        try:
+            valid_benefit = not isinstance(benefit, bool) and isinstance(benefit, (int, float)) and isfinite(benefit) and benefit >= 0
+        except OverflowError:
+            valid_benefit = False
+        if not valid_benefit:
+            raise ValueError('Station benefits must be non-negative numbers')
+        costs.append(cost)
+        benefits.append(benefit)
+    try:
+        if not isfinite(sum(benefits)):
+            raise ValueError('Total station benefit is too large')
+    except OverflowError:
+        raise ValueError('Total station benefit is too large')
+    # Divide costs by their GCD to keep the textbook DP table small without changing the answer.
+    scale = reduce(gcd, costs, 0) or 1
+    capacity = min(budget // scale, sum(costs) // scale)
+    if (len(stations) + 1) * (capacity + 1) > 2000000:
+        raise ValueError('Problem is too large; reduce the budget or number of stations')
+    dp = [[0] * (capacity + 1) for _ in range(len(stations) + 1)]
+    for i, station in enumerate(stations, 1):
+        cost = costs[i - 1] // scale
+        for w in range(capacity + 1):
+            # Compare excluding the station with including it exactly once.
+            dp[i][w] = dp[i-1][w]
             if cost <= w:
-                dp[i][w] = max(benefit + dp[i-1][w-cost], dp[i-1][w])
-            else:
-                dp[i][w] = dp[i-1][w]
-                
-    # Backtrack to find selected stations
-    selected_stations = []
-    rejected_stations = []
-    w = W
-    total_cost = 0
-    total_benefit = 0
-    
-    for i in range(n, 0, -1):
+                dp[i][w] = max(dp[i][w], station['benefit'] + dp[i-1][w-cost])
+    # Backtrack from the final cell to recover the selected stations.
+    selected = []
+    w = capacity
+    for i in range(len(stations), 0, -1):
         if dp[i][w] != dp[i-1][w]:
-            station = stations[i-1]
-            selected_stations.append(station)
-            total_cost += int(station['installation_cost'])
-            total_benefit += int(station['benefit'])
-            w -= int(station['installation_cost'])
-        else:
-            rejected_stations.append(stations[i-1])
-            
-    remaining_budget = budget - total_cost
-    
-    # Reverse to maintain original order if desired
-    selected_stations.reverse()
-    
-    return selected_stations, rejected_stations, total_cost, total_benefit, remaining_budget, dp
+            selected.append(i-1)
+            w -= costs[i-1] // scale
+    chosen = set(selected)
+    yes = [s for i, s in enumerate(stations) if i in chosen]
+    no = [s for i, s in enumerate(stations) if i not in chosen]
+    cost = sum(s['installation_cost'] for s in yes)
+    benefit = sum(s['benefit'] for s in yes)
+    return yes, no, cost, benefit, budget-cost, dp

@@ -1,101 +1,20 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EV Grid | Overview</title>
-    <link rel="stylesheet" href="/static/css/style.css">
-    <!-- Inter Font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EV Charging Station Route Planner | DAA</title>
+  <link rel="stylesheet" href="/static/css/style.css">
 </head>
-<body class="dark-theme">
-    <div class="app-shell">
-        <!-- Top Bar -->
-        <header class="top-bar">
-            <div class="logo">EV GRID <span class="subtitle">Charging Infrastructure Intelligence</span></div>
-            <div class="scenario">Scenario: Bhubaneswar</div>
-            <div class="status-indicator"><span class="dot"></span> SYSTEM OPERATIONAL</div>
-            <div class="profile">Om Prakash Sahu / Prasant Nayak</div>
-        </header>
-
-        <div class="main-container">
-            <!-- Sidebar -->
-            <nav class="sidebar">
-                <div class="nav-item active">Overview</div>
-                <div class="nav-item">Planner</div>
-                <div class="nav-item">Network</div>
-                <div class="nav-item">Stations</div>
-                <div class="nav-item">Routes</div>
-                <div class="nav-item">Algorithms</div>
-                <div class="nav-item">Analytics</div>
-                <div class="nav-item">Data Sources</div>
-                <div class="nav-item">About</div>
-            </nav>
-
-            <!-- Main Workspace -->
-            <main class="workspace">
-                <section class="overview-header">
-                    <h1>Infrastructure planning intelligence</h1>
-                    <div class="meta">
-                        <span>Location: Bhubaneswar, Odisha</span>
-                        <span>Data Source: OpenStreetMap / Open Charge Map</span>
-                        <span>Last Updated: Just now</span>
-                    </div>
-                </section>
-
-                <div class="map-container">
-                    <div id="live-map" class="placeholder-map">
-                        <div class="map-overlay">LIVE MAP (Interactive Leaflet/MapLibre Integration)</div>
-                    </div>
-                    
-                    <div class="layer-control">
-                        <h3>MAP LAYERS</h3>
-                        <label><input type="checkbox" checked> ROAD NETWORK</label>
-                        <label><input type="checkbox" checked> MST</label>
-                        <label><input type="checkbox" checked> EXISTING STATIONS</label>
-                        <label><input type="checkbox" checked> CANDIDATE STATIONS</label>
-                        <label><input type="checkbox" checked> SELECTED STATIONS</label>
-                        <label><input type="checkbox" checked> SHORTEST ROUTE</label>
-                        <label><input type="checkbox"> WEATHER</label>
-                        <label><input type="checkbox"> POINTS OF INTEREST</label>
-                    </div>
-                </div>
-
-                <div class="metrics-grid">
-                    <div class="metric-card">
-                        <div class="label">ROAD NODES</div>
-                        <div class="value">184</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="label">EV STATIONS</div>
-                        <div class="value">87</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="label">CANDIDATES</div>
-                        <div class="value">34</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="label">MST COST</div>
-                        <div class="value cyan">42.8 km</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="label">BUDGET USED</div>
-                        <div class="value green">78%</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="label">ROUTE</div>
-                        <div class="value cyan">16.4 km</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="label">COVERAGE</div>
-                        <div class="value green">+31.4%</div>
-                    </div>
-                </div>
-            </main>
-        </div>
-    </div>
-    <script src="/static/js/app.js"></script>
-</body>
-</html>
+<body>
+<header class="header"><div class="wrap header-inner"><a href="#top" class="brand"><span class="brand-icon">⚡</span> EV PLANNER <span class="brand-small"> / DAA DEMO</span></a><span class="header-note">AN INTERACTIVE LEARNING PROJECT</span></div></header>
+<main id="top" class="wrap">
+  <section class="hero"><div><span class="eyebrow">DESIGN &amp; ANALYSIS OF ALGORITHMS</span><h1>EV charging station<br><em>route planner.</em></h1><p>A DAA-based demonstration of graph algorithms and optimization. Explore how a small road network, a shortest route and a station budget fit together.</p><a class="jump" href="#graph">Explore the graph <span>↓</span></a></div><div class="hero-aside"><span>THE PLANNING PROBLEM</span><p>How can we connect locations, find a route and choose charging stations within a budget?</p><div class="tag">SIMPLE DATA · REAL ALGORITHMS</div></div></section>
+  <section class="flow" aria-label="How the algorithms relate"><div><b>01</b><strong>Graph</strong><span>Represent roads</span></div><i>→</i><div><b>02</b><strong>Kruskal</strong><span>Connect locations</span></div><i>→</i><div><b>03</b><strong>Dijkstra</strong><span>Find a route</span></div><i>→</i><div><b>04</b><strong>Knapsack</strong><span>Select stations</span></div></section>
+  <p class="note">These are three related but independent demonstrations on the same fictional planning problem. Dijkstra uses all roads, not just the MST; knapsack maximizes the listed benefits, not route coverage or charging feasibility.</p>
+  <section id="graph" class="section graph-section"><div class="section-heading"><div><span class="eyebrow">01 / THE ROAD NETWORK</span><h2>A small graph, a big idea.</h2><p>Each node is a location. Each edge is a two-way road; its label is the distance.</p></div><span class="pill">5 LOCATIONS · 6 ROADS</span></div><div class="graph-card"><svg id="graph-svg" viewBox="0 0 600 365" role="img" aria-label="Five-node weighted road network"></svg><div class="legend"><span><i class="legend-road"></i> Road</span><span><i class="legend-path"></i> Shortest path</span><span><i class="legend-mst"></i> MST</span><span><i class="legend-both"></i> Both</span></div></div><p class="hint">The diagram is schematic. Distances are illustrative, not real-world measurements.</p></section>
+  <section id="dijkstra" class="section"><div class="section-heading"><div><span class="eyebrow">02 / ROUTE PLANNING</span><h2>Find the shortest route.</h2><p>Dijkstra finds a shortest path from a start node in a graph with non-negative edge weights.</p></div><span class="pill">DIJKSTRA'S ALGORITHM</span></div><div class="algorithm-layout"><div class="card control-card"><div class="complexity"><span>TIME <b>O((V + E) log V)</b></span><span>SPACE <b>O(V + E)</b></span></div><form id="route-form"><label for="start">START LOCATION</label><select id="start"></select><label for="end">DESTINATION</label><select id="end"></select><button>Find shortest path <span>↗</span></button></form></div><div class="card result-card"><span class="result-label">DIJKSTRA RESULT</span><div id="route-result" class="empty">Choose two locations and run Dijkstra.</div><details><summary>How it works <span>+</span></summary><ol id="route-steps"><li>Start at the source with distance 0.</li><li>Choose the nearest unvisited node and relax its roads.</li><li>Repeat, then reconstruct the route.</li></ol></details></div></div></section>
+  <section id="kruskal" class="section"><div class="section-heading"><div><span class="eyebrow">03 / NETWORK CONSTRUCTION</span><h2>Connect the locations.</h2><p>Kruskal builds a minimum spanning tree by adding the lightest edges that do not create a cycle.</p></div><span class="pill">KRUSKAL'S ALGORITHM</span></div><div class="algorithm-layout"><div class="card control-card"><div class="complexity"><span>TIME <b>O(E log E)</b></span><span>SPACE <b>O(V + E)</b></span></div><p class="control-copy">Use Union-Find to connect all five locations with the smallest total road weight.</p><button id="mst-button">Generate MST <span>↗</span></button></div><div class="card result-card"><span class="result-label">MINIMUM SPANNING TREE</span><div id="mst-result" class="empty">Generate the tree to see the selected roads.</div><details><summary>How it works <span>+</span></summary><ol id="mst-steps"><li>Sort all roads by weight.</li><li>Add a road if its endpoints are not already connected.</li><li>Repeat until all locations are connected.</li></ol></details></div></div></section>
+  <section id="knapsack" class="section"><div class="section-heading"><div><span class="eyebrow">04 / STATION PLACEMENT</span><h2>Make the budget count.</h2><p>0/1 knapsack chooses the highest-benefit combination within the budget. Each candidate can be chosen at most once.</p></div><span class="pill">0/1 KNAPSACK</span></div><div class="complexity inline-complexity"><span>TIME <b>O(nW)</b></span><span>SPACE <b>O(nW)</b></span><small>W is the budget in cost units after scaling by the GCD of candidate costs.</small></div><div id="station-cards" class="station-grid"></div><div class="algorithm-layout station-layout"><div class="card control-card"><form id="station-form"><label for="budget">AVAILABLE BUDGET (₹)</label><input id="budget" type="number" min="0" step="1" value="100000" required><button>Optimize stations <span>↗</span></button></form><p class="hint">Checked stations are candidates, not automatically selected.</p></div><div class="card result-card"><span class="result-label">RECOMMENDED STATIONS</span><div id="station-result" class="empty">Choose candidates and run the optimizer.</div><details><summary>How it works <span>+</span></summary><ol id="station-steps"><li>Build a DP table: rows are stations and columns are budget units.</li><li>For each station, compare excluding it with including it once.</li><li>Backtrack to recover the selected stations.</li></ol><div id="dp-table"></div></details></div></div></section>
+  <p id="status" class="status" role="status" aria-live="polite"></p>
+</main><footer><div class="wrap">EV CHARGING STATION PLACEMENT &amp; ROUTE PLANNING <span>DAA educational demo · fictional data</span></div></footer><script src="/static/js/app.js"></script>
+</body></html>
