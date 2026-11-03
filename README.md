@@ -4,7 +4,9 @@ An educational Flask application for understanding how three algorithms relate t
 
 ## Run locally
 
-Install Python 3.9 or newer, then open a terminal in this project folder:
+Install Python 3.9 or newer. On Windows, you can double-click `run_windows.bat` in the extracted project folder. It creates a virtual environment, installs dependencies, and starts the server. Keep its window open and visit http://127.0.0.1:5000. If it reports an error, share the message in that window.
+
+Alternatively, open a terminal in this project folder:
 
 ```sh
 python -m venv .venv
