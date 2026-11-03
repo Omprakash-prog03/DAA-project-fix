@@ -1,0 +1,23 @@
+{
+  "nodes": [
+    {"id": "A", "x": 300, "y": 50},
+    {"id": "B", "x": 100, "y": 160},
+    {"id": "C", "x": 500, "y": 160},
+    {"id": "D", "x": 100, "y": 310},
+    {"id": "E", "x": 500, "y": 310}
+  ],
+  "edges": [
+    {"source": "A", "destination": "B", "weight": 4},
+    {"source": "A", "destination": "C", "weight": 2},
+    {"source": "B", "destination": "C", "weight": 1},
+    {"source": "B", "destination": "D", "weight": 5},
+    {"source": "C", "destination": "E", "weight": 8},
+    {"source": "D", "destination": "E", "weight": 3}
+  ],
+  "stations": [
+    {"station_id": "A", "station_name": "Station A", "node_id": "A", "installation_cost": 40000, "benefit": 80},
+    {"station_id": "B", "station_name": "Station B", "node_id": "B", "installation_cost": 30000, "benefit": 60},
+    {"station_id": "C", "station_name": "Station C", "node_id": "C", "installation_cost": 50000, "benefit": 100},
+    {"station_id": "D", "station_name": "Station D", "node_id": "D", "installation_cost": 20000, "benefit": 40}
+  ]
+}

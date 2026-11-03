@@ -27,7 +27,7 @@ class UnionFind:
         return False  # Cycle detected
 
 
-def kruskal_mst(nodes, edges):
+def kruskal_mst(nodes, edges, trace=None):
     """
     Manual Kruskal implementation
     Returns: mst_edges, total_weight, selected_edges, rejected_edges
@@ -69,10 +69,14 @@ def kruskal_mst(nodes, edges):
     for edge in sorted_edges:
         u, v, w = edge['source'], edge['destination'], edge['weight']
         if uf.union(u, v):
+            if trace is not None:
+                trace.append(f'Add {u} — {v} ({w}): no cycle.')
             mst_edges.append(edge)
             selected_edges.append(edge)
             total_weight += w
         else:
+            if trace is not None:
+                trace.append(f'Skip {u} — {v} ({w}): creates a cycle.')
             rejected_edges.append(edge)
             
     return mst_edges, total_weight, selected_edges, rejected_edges

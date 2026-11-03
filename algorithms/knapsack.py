@@ -27,6 +27,7 @@ def knapsack(stations, budget):
             raise ValueError('Total station benefit is too large')
     except OverflowError:
         raise ValueError('Total station benefit is too large')
+    # Divide costs by their GCD to keep the textbook DP table small without changing the answer.
     scale = reduce(gcd, costs, 0) or 1
     capacity = min(budget // scale, sum(costs) // scale)
     if (len(stations) + 1) * (capacity + 1) > 2000000:
@@ -35,9 +36,11 @@ def knapsack(stations, budget):
     for i, station in enumerate(stations, 1):
         cost = costs[i - 1] // scale
         for w in range(capacity + 1):
+            # Compare excluding the station with including it exactly once.
             dp[i][w] = dp[i-1][w]
             if cost <= w:
                 dp[i][w] = max(dp[i][w], station['benefit'] + dp[i-1][w-cost])
+    # Backtrack from the final cell to recover the selected stations.
     selected = []
     w = capacity
     for i in range(len(stations), 0, -1):

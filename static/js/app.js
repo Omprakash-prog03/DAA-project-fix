@@ -1,35 +1,146 @@
+// UI only: all three algorithms live in the Python algorithms/ directory.
 (() => {
-  const $ = id => document.getElementById(id);
-  let data, result;
-  const fmt = n => new Intl.NumberFormat('en-IN', {maximumFractionDigits: 2}).format(n);
-  const edgeKey = (a,b) => [a,b].sort().join('|');
-  function draw() {
-    const svg = $('network'); svg.replaceChildren();
-    const ns = 'http://www.w3.org/2000/svg';
-    const lats = data.nodes.map(n => n.latitude), lons = data.nodes.map(n => n.longitude);
-    const spanX = Math.max(...lons)-Math.min(...lons) || 1, spanY = Math.max(...lats)-Math.min(...lats) || 1;
-    const pos = Object.fromEntries(data.nodes.map(n => [n.id, [60 + 480*(n.longitude-Math.min(...lons))/spanX, 300-240*(n.latitude-Math.min(...lats))/spanY]]));
-    const mst = new Set((result?.mst.edges || []).map(e => edgeKey(e.source,e.destination)));
-    const path = result?.route.path || [], route = new Set(path.slice(1).map((n,i) => edgeKey(path[i],n)));
-    const element = (tag, attrs, text) => {const el=document.createElementNS(ns,tag); Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v)); if(text) el.textContent=text; svg.appendChild(el);};
-    data.edges.forEach(e => { const [x1,y1]=pos[e.source], [x2,y2]=pos[e.destination], key=edgeKey(e.source,e.destination); element('line',{x1,y1,x2,y2,class:route.has(key)?'line-route':mst.has(key)?'line-mst':'line-road'}); });
-    data.nodes.forEach(n => {const [x,y]=pos[n.id]; element('circle',{cx:x,cy:y,r:8,class:'node'}); element('text',{x:x+12,y:y-10,class:'node-label'}, n.name);});
+  const byId = id => document.getElementById(id);
+  const money = amount => '₹' + new Intl.NumberFormat('en-IN').format(amount);
+  const svgNamespace = 'http://www.w3.org/2000/svg';
+  let demo;
+  let routeEdges = new Set();
+  let mstEdges = new Set();
+
+  function edgeKey(a, b) { return [a, b].sort().join('-'); }
+
+  function svgElement(name, attributes, text) {
+    const element = document.createElementNS(svgNamespace, name);
+    for (const [key, value] of Object.entries(attributes)) element.setAttribute(key, value);
+    if (text !== undefined) element.textContent = text;
+    return element;
   }
-  async function run(e) {
-    if (e) e.preventDefault();
-    if (!data) return;
-    $('run').disabled = true; $('message').textContent = 'Calculating…';
+
+  function drawGraph() {
+    const svg = byId('graph-svg');
+    svg.replaceChildren();
+    const points = Object.fromEntries(demo.nodes.map(node => [node.id, node]));
+    for (const edge of demo.edges) {
+      const a = points[edge.source], b = points[edge.destination];
+      const key = edgeKey(edge.source, edge.destination);
+      const onRoute = routeEdges.has(key), onTree = mstEdges.has(key);
+      const style = onRoute && onTree ? 'both' : onRoute ? 'path' : onTree ? 'tree' : 'road';
+      svg.appendChild(svgElement('line', {x1:a.x, y1:a.y, x2:b.x, y2:b.y, class:style}));
+      const x = (a.x + b.x) / 2, y = (a.y + b.y) / 2;
+      svg.appendChild(svgElement('circle', {cx:x, cy:y, r:14, class:'weight-bg'}));
+      svg.appendChild(svgElement('text', {x, y:y+5, class:'weight-text'}, String(edge.weight)));
+    }
+    for (const node of demo.nodes) {
+      svg.appendChild(svgElement('circle', {cx:node.x, cy:node.y, r:23, class:'node-circle'}));
+      svg.appendChild(svgElement('text', {x:node.x, y:node.y+6, class:'node-text'}, node.id));
+    }
+  }
+
+  function showSteps(id, steps) {
+    const list = byId(id);
+    list.replaceChildren();
+    steps.forEach(step => { const item = document.createElement('li'); item.textContent = step; list.appendChild(item); });
+  }
+
+  async function post(url, body) {
+    const response = await fetch(url, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Could not calculate the result.');
+    return result;
+  }
+
+  function showError(target, error) {
+    byId(target).textContent = error.message || 'Something went wrong.';
+  }
+
+  byId('route-form').addEventListener('submit', async event => {
+    event.preventDefault();
     try {
-      const response = await fetch('/api/optimize',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...data, source:$('source').value,destination:$('destination').value,budget:Number($('budget').value)})});
-      const json = await response.json(); if(!response.ok) throw new Error(json.error || 'Optimization failed'); result=json;
-      $('nodes').textContent=result.network.node_count; $('mst').textContent=fmt(result.mst.weight)+' km' + (result.mst.connected ? '' : ' (forest)'); $('distance').textContent=result.route.distance === null ? 'No route' : fmt(result.route.distance)+' km';
-      $('selected-count').textContent=result.stations.selected.length; $('cost').textContent='₹'+fmt(result.stations.total_cost); $('benefit').textContent=fmt(result.stations.total_benefit);
-      const names=Object.fromEntries(data.nodes.map(n=>[n.id,n.name])); $('route-text').textContent=result.route.path.map(id=>names[id]).join(' → ') || 'No route available.';
-      $('stations').replaceChildren(); result.stations.selected.forEach(s => {const li=document.createElement('li');li.textContent=`${s.station_name} · ₹${fmt(s.installation_cost)} · benefit ${s.benefit}`; $('stations').appendChild(li);});
-      if(!result.stations.selected.length) {const li=document.createElement('li');li.textContent='No stations selected for this budget.';$('stations').appendChild(li);}
-      $('remaining').textContent='Remaining budget: ₹'+fmt(result.stations.remaining_budget); $('message').textContent=result.mst.connected ? 'Optimization complete.' : `Network disconnected: ${result.mst.components} components. Showing a spanning forest.`; draw();
-    } catch(err) { $('message').textContent='Unable to calculate: '+err.message; } finally { $('run').disabled=false; }
+      const start = byId('start').value, end = byId('end').value;
+      const result = await post('/api/demo/dijkstra', {source:start, destination:end});
+      byId('route-result').replaceChildren();
+      const path = document.createElement('strong'); path.className = 'result-primary';
+      path.textContent = result.path.length ? result.path.join(' → ') : 'No route found';
+      const distance = document.createElement('p'); distance.textContent = result.distance === null ? 'The destination is unreachable.' : `Total distance: ${result.distance}`;
+      const visited = document.createElement('p'); visited.textContent = `Visited nodes: ${result.visited.join(', ')}`;
+      byId('route-result').append(path, distance, visited);
+      showSteps('route-steps', [`Start at ${start} with distance 0.`, ...result.steps, result.path.length ? `Reconstruct the path: ${result.path.join(' → ')}.` : 'The destination is unreachable.']);
+      routeEdges = new Set(result.path.slice(1).map((node, i) => edgeKey(result.path[i], node)));
+      drawGraph();
+    } catch (error) { showError('route-result', error); }
+  });
+
+  byId('mst-button').addEventListener('click', async () => {
+    try {
+      const result = await post('/api/demo/kruskal', {});
+      byId('mst-result').replaceChildren();
+      const list = document.createElement('ul'); list.className = 'result-list';
+      result.edges.forEach(edge => { const item=document.createElement('li'); item.textContent=`${edge.source} — ${edge.destination} : ${edge.weight}`; list.appendChild(item); });
+      const total = document.createElement('p'); total.textContent = `Total MST cost: ${result.total}`;
+      byId('mst-result').append(list,total);
+      showSteps('mst-steps', ['Sort all roads by weight.', ...result.steps, `The tree has total cost ${result.total}.`]);
+      mstEdges = new Set(result.edges.map(edge => edgeKey(edge.source, edge.destination)));
+      drawGraph();
+    } catch (error) { showError('mst-result', error); }
+  });
+
+  function displayTable(result) {
+    const container = byId('dp-table'); container.replaceChildren();
+    const description = document.createElement('p'); description.className='hint';
+    description.textContent = `DP table: best benefit for each budget. Column values are in units of ${money(result.unit)}. The table ends at the smaller of the budget and total candidate costs.`;
+    const table = document.createElement('table');
+    const header = document.createElement('tr');
+    for (const heading of ['Stations', ...result.table[0].map((_, index) => String(index))]) {
+      const cell=document.createElement('th'); cell.textContent=heading; header.appendChild(cell);
+    }
+    table.appendChild(header);
+    result.table.forEach((row, index) => {
+      const tr=document.createElement('tr');
+      const label=document.createElement('th'); label.textContent=index === 0 ? 'None' : `Through ${result.candidates[index-1]}`; tr.appendChild(label);
+      row.forEach(value => {const cell=document.createElement('td'); cell.textContent=value; tr.appendChild(cell);});
+      table.appendChild(tr);
+    });
+    container.append(description, table);
   }
-  $('planner').addEventListener('submit',run);
-  fetch('/api/dataset/small_network').then(r=>{if(!r.ok) throw new Error('Dataset unavailable');return r.json();}).then(json=>{data=json; for(const id of ['source','destination']) data.nodes.forEach(n=>{const opt=document.createElement('option');opt.value=n.id;opt.textContent=n.name;$(id).appendChild(opt)}); $('destination').value=data.nodes[data.nodes.length-1].id; $('network-count').textContent=`${data.nodes.length} nodes / ${data.edges.length} roads`; draw(); run();}).catch(err=>{$('message').textContent='Could not load demo: '+err.message;$('run').disabled=true;});
+
+  byId('station-form').addEventListener('submit', async event => {
+    event.preventDefault();
+    try {
+      const budget = Number(byId('budget').value);
+      if (!Number.isSafeInteger(budget) || budget < 0) throw new Error('Enter a non-negative whole-number budget.');
+      const station_ids = [...document.querySelectorAll('.station-checkbox:checked')].map(box => box.value);
+      const result = await post('/api/demo/knapsack', {budget, station_ids});
+      byId('station-result').replaceChildren();
+      const selected=document.createElement('strong'); selected.className='result-primary';
+      selected.textContent = result.selected.length ? result.selected.map(station => station.station_name).join(', ') : 'No stations selected';
+      const totals=document.createElement('p'); totals.textContent=`Total cost: ${money(result.cost)} · Total benefit: ${result.benefit}`;
+      const remaining=document.createElement('p'); remaining.textContent=`Budget remaining: ${money(result.remaining)}`;
+      byId('station-result').append(selected,totals,remaining);
+      showSteps('station-steps', [`Start with budget ${money(budget)} and ${station_ids.length} candidates.`, `Fill the table: compare excluding each station with including it once.`, `Backtrack through the table to find ${result.selected.length} selected station(s).`, `Their cost is ${money(result.cost)} and benefit is ${result.benefit}.`]);
+      displayTable(result);
+    } catch (error) { showError('station-result', error); }
+  });
+
+  async function init() {
+    try {
+      const response = await fetch('/api/demo');
+      if (!response.ok) throw new Error('Could not load the demonstration data.');
+      demo = await response.json();
+      for (const id of ['start', 'end']) {
+        demo.nodes.forEach(node => { const option=document.createElement('option'); option.value=node.id; option.textContent=node.id; byId(id).appendChild(option); });
+      }
+      byId('end').value = 'E';
+      for (const station of demo.stations) {
+        const label=document.createElement('label'); label.className='station-card';
+        const checkbox=document.createElement('input'); checkbox.className='station-checkbox'; checkbox.type='checkbox'; checkbox.value=station.station_id; checkbox.checked=true;
+        const title=document.createElement('strong'); title.textContent=station.station_name;
+        const cost=document.createElement('span'); cost.textContent=`Cost ${money(station.installation_cost)}`;
+        const benefit=document.createElement('span'); benefit.textContent=`Benefit ${station.benefit}`;
+        const checkLabel=document.createElement('span'); checkLabel.className='check-label'; checkLabel.append(checkbox, document.createTextNode(' Include as candidate'));
+        label.append(title,cost,benefit,checkLabel); byId('station-cards').appendChild(label);
+      }
+      drawGraph();
+    } catch (error) { byId('status').textContent=error.message; }
+  }
+  init();
 })();

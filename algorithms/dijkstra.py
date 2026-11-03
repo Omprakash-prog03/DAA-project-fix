@@ -4,7 +4,7 @@ import math
 from itertools import count
 
 
-def dijkstra(graph, source, destination):
+def dijkstra(graph, source, destination, trace=None):
     if not isinstance(graph, dict) or not isinstance(source, str) or not isinstance(destination, str):
         raise ValueError('Provide a graph and valid source and destination')
     if source not in graph or destination not in graph:
@@ -29,6 +29,7 @@ def dijkstra(graph, source, destination):
             raise ValueError('Total edge weight is too large')
     except OverflowError:
         raise ValueError('Total edge weight is too large')
+    # Start every location at infinity except the chosen source.
     distances = {node: float('inf') for node in graph}
     predecessors = {node: None for node in graph}
     distances[source] = 0
@@ -37,19 +38,26 @@ def dijkstra(graph, source, destination):
     visited = set()
     visited_order = []
     while queue:
+        # Take the closest unvisited location from the min-heap.
         distance, _, node = heapq.heappop(queue)
         if node in visited:
             continue
         visited.add(node)
         visited_order.append(node)
+        if trace is not None:
+            trace.append(f'Select {node} with shortest known distance {distance}.')
         if node == destination:
             break
         for neighbor, weight in graph[node].items():
+            # Relax this road when it improves the known distance.
             candidate = distance + weight
             if candidate < distances[neighbor]:
+                if trace is not None:
+                    trace.append(f'Relax {node} → {neighbor}: update distance to {candidate}.')
                 distances[neighbor] = candidate
                 predecessors[neighbor] = node
                 heapq.heappush(queue, (candidate, next(sequence), neighbor))
+    # Follow predecessors backwards to reconstruct the path.
     path = []
     if distances[destination] != float('inf'):
         current = destination

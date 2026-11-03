@@ -125,5 +125,52 @@ def api_dijkstra():
     distance, path, predecessors, visited = dijkstra(graph, data['source'], data['destination'])
     return jsonify(distance=distance if math.isfinite(distance) else None, path=path, predecessors=predecessors, visited_order=visited)
 
+# Teaching endpoints use one fixed dataset, so students can trace each result by hand.
+def teaching_data():
+    path = Path(__file__).resolve().parent / 'datasets' / 'teaching_graph.json'
+    with path.open(encoding='utf-8') as file:
+        return json.load(file)
+
+@app.get('/api/demo')
+def demo_data():
+    return jsonify(teaching_data())
+
+@app.post('/api/demo/dijkstra')
+def demo_dijkstra():
+    data = payload()
+    demo = teaching_data()
+    _, _, graph = graph_data(demo)
+    trace = []
+    distance, path, _, visited = dijkstra(graph, data.get('source'), data.get('destination'), trace)
+    return jsonify(path=path, distance=distance if math.isfinite(distance) else None,
+                   visited=visited, steps=trace)
+
+@app.post('/api/demo/kruskal')
+def demo_kruskal():
+    demo = teaching_data()
+    nodes, edges, _ = graph_data(demo)
+    trace = []
+    selected, total, _, _ = kruskal_mst(nodes, edges, trace)
+    return jsonify(edges=selected, total=total, steps=trace)
+
+@app.post('/api/demo/knapsack')
+def demo_knapsack():
+    from functools import reduce
+    from math import gcd
+    data = payload()
+    candidates = teaching_data()['stations']
+    chosen_ids = data.get('station_ids', [s['station_id'] for s in candidates])
+    if not isinstance(chosen_ids, list) or any(not isinstance(i, str) for i in chosen_ids):
+        raise ValueError('Station IDs must be a list of strings')
+    if len(set(chosen_ids)) != len(chosen_ids) or any(i not in {s['station_id'] for s in candidates} for i in chosen_ids):
+        raise ValueError('Station IDs must be unique and present in the demo')
+    stations = [s for s in candidates if s['station_id'] in chosen_ids]
+    budget = data.get('budget')
+    selected, _, cost, benefit, remaining, table = knapsack(stations, budget)
+    # Each DP column represents one greatest-common-divisor unit of rupees.
+    unit = reduce(gcd, (station['installation_cost'] for station in stations), 0) or 1
+    return jsonify(selected=selected, cost=cost, benefit=benefit, remaining=remaining,
+                   unit=unit, table=table, candidates=[s['station_id'] for s in stations])
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False)
